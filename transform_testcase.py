@@ -35,10 +35,33 @@ Your task is to transform this input into a structured JSON object that conforms
     ]
 }}
 
-### Transformation Rules
-1. Validate tcodes and descriptions.
-2. Populate mandatory_fields and output_fields.
-3. Output valid JSON only.
+### Enhanced Transformation Rules
+
+1. **Transaction Code Validation**
+   - If `tcodes` are provided, verify them against known SAP transaction codes.
+   - Confirm that each `tcode` aligns with the described business action or process.
+   - Flag mismatches between `tcode` functionality and description.
+
+2. **Missing Transaction Codes**
+   - If `tcode` is missing but an action description is present, attempt to infer the most likely `tcode`.
+   - Use domain knowledge and context clues from the description to map to SAP transactions.
+   - If inference is not possible, assign `"none"`.
+
+3. **Field Completion**
+   - Fill in all missing fields where possible:
+     - Derive from the action description.
+     - Infer from common SAP business processes.
+     - Use defaults if no clear match exists.
+
+4. **Fallback Rules**
+   - If no suitable `tcode` exists or functionality cannot be determined, always return `"none"`.
+   - Do not invent or create custom `tcodes`.
+
+5. **Output Fields**
+   - Always provide `output_fields` that specify what data or artifacts result from executing the action.
+   - If unknown, return `"none"`.
+
+
 
 ### Input
 {test_case_json}
