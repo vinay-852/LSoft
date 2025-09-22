@@ -59,19 +59,38 @@ Your task is to transform this input into a structured JSON object that conforms
 async def get_testcase_output(test_case):
     """Calls the AI model and returns the parsed output JSON for the given test_case object."""
     prompt = build_prompt(test_case)
-    def sync_call():
-        return client.chat.completions.create(
-            model="gemini-2.5-flash",
-            messages=[{"role": "user", "content": prompt}]
-        )
-    response = await asyncio.to_thread(sync_call)
-    content = response.choices[0].message.content.strip()
     try:
+        # Async LLM call with timeout
+        response = await asyncio.wait_for(
+            client.chat.completions.create(
+                model="gemini-2.5-flash",
+                messages=[{"role": "user", "content": prompt}]
+            ), timeout=15
+        )
+        content = response.choices[0].message.content.strip()
+        if content.startswith("```json"):
+            content = content[7:]
+        if content.endswith("```"):
+            content = content[:-3]
+        content = content.strip()
         data = json.loads(content)
+        # Merge missing fields efficiently
+        if isinstance(data, dict):
+            data.setdefault("Case", getattr(test_case, "Case", ""))
+            if "Steps" in data and hasattr(test_case, "Steps"):
+                for idx, input_step in enumerate(test_case.Steps):
+                    if idx < len(data["Steps"]):
+                        output_step = data["Steps"][idx]
+                        for field in ("step_number", "action", "tcodes", "sap_tcode_description"):
+                            output_step.setdefault(field, getattr(input_step, field, ""))
         return data
+    except asyncio.TimeoutError:
+        import logging
+        logging.error("LLM call timed out for test_case: %s", getattr(test_case, "Case", ""))
+        return None
     except Exception as e:
-        print("Error parsing response as JSON:", e)
-        print("Raw content returned:\n", content)
+        import logging
+        logging.error("Error parsing LLM response: %s", str(e))
         return None
 
 def print_steps_table(steps):
