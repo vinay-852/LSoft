@@ -9,7 +9,11 @@ from model.testcase_input import TestCaseInput, Step
 client = AIclient()
 
 def build_prompt(test_case):
-    return f"""
+        test_case_json = json.dumps({
+                "Case": getattr(test_case, "Case", ""),
+                "Steps": [step.model_dump() for step in getattr(test_case, "Steps", [])]
+        }, indent=2)
+        return f"""
 You are provided with an SAP test case object that contains the following fields:
 - Case
 - Steps (each step includes: step_number, action, tcodes, sap_tcode_description)
@@ -18,17 +22,17 @@ Your task is to transform this input into a structured JSON object that conforms
 
 ### Output Schema
 {{
-  "Case": "string",
-  "Steps": [
-    {{
-      "step_number": "string (sequential index starting from 1)",
-      "action": "string (short descriptive action)",
-      "tcodes": "string (validated SAP transaction code, or 'none')",
-      "sap_tcode_description": "string (short explanation of the tcode)",
-      "mandatory_fields": ["list", "of", "key", "fields"],
-      "output_fields": ["list", "of", "resulting", "fields"]
-    }}
-  ]
+    "Case": "string",
+    "Steps": [
+        {{
+            "step_number": "string (sequential index starting from 1)",
+            "action": "string (short descriptive action)",
+            "tcodes": "string (validated SAP transaction code, or 'none')",
+            "sap_tcode_description": "string (short explanation of the tcode)",
+            "mandatory_fields": ["list", "of", "key", "fields"],
+            "output_fields": ["list", "of", "resulting", "fields"]
+        }}
+    ]
 }}
 
 ### Transformation Rules
@@ -37,16 +41,14 @@ Your task is to transform this input into a structured JSON object that conforms
 3. Output valid JSON only.
 
 ### Input
-{{
-  "Case": "{test_case.Case}",
-  "Steps": {json.dumps([step.model_dump() for step in test_case.Steps], indent=2)}
-}}
+{test_case_json}
 """
 
 def _sync_get_testcase_output(test_case):
     """Synchronous Gemini call wrapped for async usage."""
     prompt = build_prompt(test_case)
     try:
+        print(prompt)
         response = client.chat.completions.create(
             model="gemini-2.5-flash",
             messages=[{"role": "user", "content": prompt}]
