@@ -1,0 +1,40 @@
+# -------------------------------------------------------------------------
+# Define test case input
+# -------------------------------------------------------------------------
+test_case = TestCaseInput(
+    Case="Standard Order - EXPORT",
+    Steps=[
+        Step(step_number="1", action="Create Sales Order manually for an EXPORT customer", tcodes="", sap_tcode_description=""),
+        Step(step_number="2", action="Check correct forwarding agent is selected otherwise all below steps will be void", tcodes="", sap_tcode_description=""),
+        Step(step_number="3", action="Check the unloading point to see the allocation plan for the customer", tcodes="", sap_tcode_description=""),
+        Step(step_number="4", action="Check storage location is populated with 0001", tcodes="", sap_tcode_description=""),
+        Step(step_number="5", action="Check in VA02 on the day that this customer is due to allocate that it has automatically allocated", tcodes="", sap_tcode_description=""),
+        Step(step_number="6", action="Create delivery", tcodes="", sap_tcode_description=""),
+        Step(step_number="7", action="Create Shipment and attach delivery. Check Planning & Checking", tcodes="", sap_tcode_description=""),
+        Step(step_number="8", action="Verify if Proforma invoice created automatically", tcodes="", sap_tcode_description=""),
+        Step(step_number="9", action="Go to Shipment and Select Load Start and save", tcodes="", sap_tcode_description=""),
+        Step(step_number="10", action="Transfer Order (TO) is created and Pick List printed", tcodes="", sap_tcode_description=""),
+        Step(step_number="11", action="Generate Shipping labels", tcodes="", sap_tcode_description=""),
+        Step(step_number="12", action="Complete the Picking and confirm the TO", tcodes="", sap_tcode_description=""),
+        Step(step_number="13", action="Complete packing", tcodes="", sap_tcode_description=""),
+        Step(step_number="14", action="Perform Packing Complete", tcodes="", sap_tcode_description=""),
+        Step(step_number="15", action="Warehouse confirms shipment and perform steps until shipment end", tcodes="", sap_tcode_description=""),
+        Step(step_number="16", action="Create an invoice inline with customer settings", tcodes="", sap_tcode_description=""),
+        Step(step_number="17", action="Finance and Controlling Document Checks for correct GL hits, correct customer VAT/TAX number, PHINIA VAT/TAX number", tcodes="", sap_tcode_description=""),
+    ]
+)
+
+# -------------------------------------------------------------------------
+# Define test case input
+# -------------------------------------------------------------------------
+test_case = TestCaseInput(
+    Case="Create and display CO-PA documents",
+    Steps=[
+        Step(step_number="1", action="Create standard sales order/Sales agreement", tcodes="", sap_tcode_description=""),
+        Step(step_number="2", action="Invoice created; accounting and controlling document created", tcodes="", sap_tcode_description=""),
+        Step(step_number="3", action="PO for orders(service purchase)", tcodes="", sap_tcode_description=""),
+        Step(step_number="4", action="Enter goods receipt", tcodes="", sap_tcode_description=""),
+        Step(step_number="5", action="Enter invoice with higher/lower price than the goods receipt", tcodes="", sap_tcode_description=""),
+        Step(step_number="6", action="Journal Entry using an account transferred in CO-PA", tcodes="", sap_tcode_description=""),
+    ]
+)
