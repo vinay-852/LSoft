@@ -21,9 +21,7 @@ def parse_testcase_file(file_path: str):
 				action = str(row.get('Action', '')).strip()
 				tcodes = str(row.get('tcodes', '')).strip() if 'tcodes' in df.columns else None
 				sap_tcode_description = str(row.get('sap_tcode_description', '')).strip() if 'sap_tcode_description' in df.columns else None
-				if not any([step_number, action, tcodes, sap_tcode_description]):
-					continue
-				if action.lower() == 'action':
+				if step_number != "Step #" and action != "Action":
 					continue
 				steps.append(Step(
 					step_number=step_number,
