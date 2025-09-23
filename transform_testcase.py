@@ -71,7 +71,7 @@ def _sync_get_testcase_output(test_case):
     """Synchronous Gemini call wrapped for async usage."""
     prompt = build_prompt(test_case)
     try:
-        print(prompt)
+        # print(prompt)
         response = client.chat.completions.create(
             model="gemini-2.5-flash",
             messages=[{"role": "user", "content": prompt}]
